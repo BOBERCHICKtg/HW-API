@@ -6,4 +6,3 @@ export const updateCom = (comments) => {
   comment = comments;
 };
 
-/* a */
