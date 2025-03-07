@@ -1,0 +1,12 @@
+li {
+    margin-bottom: 10px;
+  }
+  
+  li button {
+    display: inline-block;
+    margin-left: 10px;
+  }
+  
+  .error {
+    background-color: red;
+  }
