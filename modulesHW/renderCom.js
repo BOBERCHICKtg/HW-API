@@ -4,6 +4,18 @@ import { likeListeners, replyListeners } from "./listeners.js";
 export const renderCom = () => {
   const list = document.querySelector(".comments");
 
+  // Проверка на существование DOM-элемента
+  if (!list) {
+    console.error("Элемент с классом 'comments' не найден");
+    return;
+  }
+
+  // Проверка на существование и массивность comment
+  if (!comment || !Array.isArray(comment)) {
+    console.error("Комментарии не определены или не являются массивом");
+    return;
+  }
+
   list.innerHTML = comment
     .map((comment, index) => {
       return `
@@ -30,6 +42,11 @@ export const renderCom = () => {
     })
     .join("");
 
-  likeListeners(renderCom);
-  replyListeners();
+  // Проверяем, что функции существуют перед вызовом
+  if (likeListeners) {
+    likeListeners(renderCom);
+  }
+  if (replyListeners) {
+    replyListeners();
+  }
 };
