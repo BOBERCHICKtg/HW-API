@@ -3,12 +3,14 @@ import { updateCom } from "./modulesHW/comments.js";
 import { sanitize } from "./modulesHW/sanitizeHW.js";
 
 fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
-  .then((response) => {
-    return response.json();
-  })
+  .then((response) => response.json())
   .then((data) => {
-    updateCom(data.comments);
-    renderCom();
+    if (Array.isArray(data.comments)) {
+      updateCom(data.comments);
+      renderCom();
+    } else {
+      console.error("Неверный формат данных от сервера:", data);
+    }
   });
 
 export const addCommentListener = (renderCom) => {
@@ -23,6 +25,7 @@ export const addCommentListener = (renderCom) => {
           "Это обязательное поле!!!";
         document.getElementById("comment").placeholder =
           "Это обязательное поле!!!";
+        return;
       }
 
       const newComment = {
@@ -37,15 +40,20 @@ export const addCommentListener = (renderCom) => {
         method: "POST",
         body: JSON.stringify(newComment),
       })
-        .then((response) => {
-          return response.json();
-        })
+        .then((response) => response.json())
         .then((data) => {
-          updateCom(data.comments);
-          renderCom();
+          fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
+            .then((response) => response.json())
+            .then((commentsData) => {
+              if (Array.isArray(commentsData.comments)) {
+                updateCom(commentsData.comments);
+                renderCom();
+              }
+            });
+        })
+        .catch((error) => {
+          console.error("Ошибка при добавлении комментария:", error);
         });
-
-      renderCom();
 
       name.value = "";
       text.value = "";
