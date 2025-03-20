@@ -4,7 +4,8 @@ import { likeListeners, replyListeners } from "./listeners.js";
 export const renderCom = () => {
   const list = document.querySelector(".comments");
 
-  // Добавляем проверку, что comment определен и является массивом
+  
+
   if (Array.isArray(comment)) {
     list.innerHTML = comment
       .map((comment, index) => {

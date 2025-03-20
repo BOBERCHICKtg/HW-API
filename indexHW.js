@@ -36,16 +36,27 @@ export const addCommentListener = (renderCom) => {
         isLiked: false,
       };
 
+      buttonEl.disabled = true;
+      buttonEl.textContent = "Комментарий отправляется...";
+
       fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments", {
         method: "POST",
         body: JSON.stringify(newComment),
       })
+        .then((response) => {
+          return fetch(
+            "https://wedev-api.sky.pro/api/v1/danil-bersenev/comments"
+          );
+        })
         .then((response) => response.json())
         .then((data) => {
           fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
             .then((response) => response.json())
             .then((commentsData) => {
               if (Array.isArray(commentsData.comments)) {
+                buttonEl.disabled = false;
+                buttonEl.textContent = "Написать";
+
                 updateCom(commentsData.comments);
                 renderCom();
               }
