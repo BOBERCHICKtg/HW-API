@@ -4,15 +4,13 @@ import { likeListeners, replyListeners } from "./listeners.js";
 export const renderCom = () => {
   const list = document.querySelector(".comments");
 
-  
-
   if (Array.isArray(comment)) {
     list.innerHTML = comment
       .map((comment, index) => {
         return `
      <li id="commentBox" data-index="${index}" class="comment">
          <div class="comment-header">
-             <div>${comment.name}</div>
+             <div>${comment.author.name}</div>
              <div>${comment.date}</div>
          </div>
          <div class="comment-body">

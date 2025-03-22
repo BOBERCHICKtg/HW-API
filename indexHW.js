@@ -30,6 +30,7 @@ export const addCommentListener = (renderCom) => {
 
       const newComment = {
         name: sanitize(name.value),
+        author: { "name": "Глеб Фокин" },
         date: new Date(),
         text: sanitize(text.value),
         likes: 0,
