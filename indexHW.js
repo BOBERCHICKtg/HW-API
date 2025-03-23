@@ -2,6 +2,8 @@ import { renderCom } from "./modulesHW/renderCom.js";
 import { comment, updateCom } from "./modulesHW/comments.js";
 import { sanitize } from "./modulesHW/sanitizeHW.js";
 
+document.querySelector(".comments").innerHTML = "Загружаю комментарий...";
+
 fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
   .then((response) => response.json())
   .then((data) => {
@@ -31,13 +33,11 @@ export const addCommentListener = (renderCom) => {
       const newComment = {
         name: sanitize(name.value),
         author: { name: "Глеб Фокин" },
-        date: new Date().toLocaleDateString(),
+        date: new Date(),
         text: sanitize(text.value),
         likes: 0,
         isLiked: false,
       };
-
-      console.log(newComment.date);
 
       buttonEl.disabled = true;
       buttonEl.textContent = "Комментарий отправляется...";
@@ -46,6 +46,34 @@ export const addCommentListener = (renderCom) => {
         method: "POST",
         body: JSON.stringify(newComment),
       })
+        .then((response) => {
+          if (response.status === 500) {
+            throw new Error("Ошибка сервера");
+          }
+
+          if (response.status === 400) {
+            throw new Error("Неверный запрос");
+          }
+
+          if (response.status === 201) {
+            return response.json();
+          }
+        })
+        .catch((error) => {
+          if (error.message === "Failed to fetch") {
+            alert("Проверьте подключение к сети");
+          }
+
+          if (error.message === "Неверный запрос") {
+            alert("Имя и текст комментария должны быть не короче 3-х символов");
+          }
+
+          if (error.message === "Ошибка сервера") {
+            alert("Ошибка сервера");
+          }
+          buttonEl.disabled = false;
+          buttonEl.textContent = "Написать";
+        })
         .then((response) => {
           return fetch(
             "https://wedev-api.sky.pro/api/v1/danil-bersenev/comments"
@@ -64,9 +92,6 @@ export const addCommentListener = (renderCom) => {
                 renderCom();
               }
             });
-        })
-        .catch((error) => {
-          console.error("Ошибка при добавлении комментария:", error);
         });
 
       name.value = "";
