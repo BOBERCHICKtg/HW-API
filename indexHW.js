@@ -1,5 +1,5 @@
 import { renderCom } from "./modulesHW/renderCom.js";
-import { updateCom } from "./modulesHW/comments.js";
+import { comment, updateCom } from "./modulesHW/comments.js";
 import { sanitize } from "./modulesHW/sanitizeHW.js";
 
 fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
@@ -30,12 +30,14 @@ export const addCommentListener = (renderCom) => {
 
       const newComment = {
         name: sanitize(name.value),
-        author: { "name": "Глеб Фокин" },
-        date: new Date(),
+        author: { name: "Глеб Фокин" },
+        date: new Date().toLocaleDateString(),
         text: sanitize(text.value),
         likes: 0,
         isLiked: false,
       };
+
+      console.log(newComment.date);
 
       buttonEl.disabled = true;
       buttonEl.textContent = "Комментарий отправляется...";

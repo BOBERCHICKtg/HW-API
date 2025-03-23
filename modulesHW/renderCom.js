@@ -11,7 +11,7 @@ export const renderCom = () => {
      <li id="commentBox" data-index="${index}" class="comment">
          <div class="comment-header">
              <div>${comment.author.name}</div>
-             <div>${comment.date}</div>
+             <div>${new Date(comment.date).toLocaleDateString()}</div>
          </div>
          <div class="comment-body">
              <div class="comment-text">
