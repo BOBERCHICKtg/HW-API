@@ -1,4 +1,6 @@
-import { comment } from "./comments.js";
+import { postCom } from "./api.js";
+import { comments, updateCom } from "./comments.js";
+import { renderCom } from "./renderCom.js";
 import { sanitize } from "./sanitizeHW.js";
 
 export const likeListeners = (renderCom) => {
@@ -9,18 +11,15 @@ export const likeListeners = (renderCom) => {
       event.stopPropagation();
       const index = likeBtn.dataset.index;
 
-      // Проверка на существование комментария
-      if (comment[index]) {
-        const currentComment = comment[index];
+      const currentComment = comment[index];
 
-        currentComment.likes = currentComment.isLiked
-          ? currentComment.likes - 1
-          : currentComment.likes + 1;
+      currentComment.likes = currentComment.isLiked
+        ? currentComment.likes - 1
+        : currentComment.likes + 1;
 
-        currentComment.isLiked = !currentComment.isLiked;
+      currentComment.isLiked = !currentComment.isLiked;
 
-        renderCom();
-      }
+      renderCom();
     });
   }
 };
@@ -31,45 +30,55 @@ export const replyListeners = () => {
 
   for (const commentEl of commentsEl) {
     commentEl.addEventListener("click", () => {
-      const index = commentEl.dataset.index;
-
-      if (comment[index]) {
-        const currentComment = comment[index];
-        text.value = `${currentComment.name}: ${currentComment.text}`;
-      }
+      const currentComment = comments[commentEl.dataset.index];
+      text.value = `${currentComment.name}: ${currentComment.text}`;
     });
   }
 };
 
-/* export const addCommentListener = (renderCom) => {
+export const addCommentListener = (renderCom) => {
   const buttonEl = document.querySelector(".add-form-button");
   const name = document.getElementById("name");
   const text = document.getElementById("comment");
 
   if (buttonEl && name && text) {
     buttonEl.addEventListener("click", () => {
-      if (name.value === "" || text.value === "") {
+      const trimmedName = name.value.trim();
+      const trimmedText = text.value.trim();
+
+      if (trimmedName === "" || trimmedText === "") {
         document.getElementById("name").placeholder =
           "Это обязательное поле!!!";
         document.getElementById("comment").placeholder =
           "Это обязательное поле!!!";
-      } else {
-        const newComment = {
-          name: sanitize(name.value),
-          date: new Date(),
-          text: sanitize(text.value),
-          likes: 0,
-          isLiked: false,
-        };
-
-        /*         comment.push(newComment); */
-
-/*         renderCom(); */
-
-/*  name.value = "";
-        text.value = "";
+        return;
       }
+
+      document.querySelector(".loading-com").style.display = "block";
+      document.querySelector(".add-form").style.display = "none";
+
+      postCom(sanitize(text.value), sanitize(name.value))
+        .then((data) => {
+          document.querySelector(".loading-com").style.display = "none";
+          document.querySelector(".add-form").style.display = "flex";
+
+          updateCom(data);
+          renderCom();
+          name.value = "";
+          text.value = "";
+        })
+        .catch((error) => {
+          document.querySelector(".loading-com").style.display = "none";
+          document.querySelector(".add-form").style.display = "flex";
+
+          if (error.message === "Неверный запрос") {
+            alert("Имя и комментарий дожны быть не короче 3-х символов");
+          }
+
+          if (error.message === "Failed to fetch") {
+            alert("Проверьте подключеник");
+          }
+        });
     });
   }
 };
- */

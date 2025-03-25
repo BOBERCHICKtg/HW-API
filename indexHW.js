@@ -1,103 +1,15 @@
+import { fetchCom } from "./modulesHW/api.js";
+import { updateCom } from "./modulesHW/comments.js";
+import { addCommentListener } from "./modulesHW/listeners.js";
 import { renderCom } from "./modulesHW/renderCom.js";
-import { comment, updateCom } from "./modulesHW/comments.js";
-import { sanitize } from "./modulesHW/sanitizeHW.js";
 
 document.querySelector(".comments").innerHTML = "Загружаю комментарий...";
 
-fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
-  .then((response) => response.json())
-  .then((data) => {
-    if (Array.isArray(data.comments)) {
-      updateCom(data.comments);
-      renderCom();
-    } else {
-      console.error("Неверный формат данных от сервера:", data);
-    }
-  });
-
-export const addCommentListener = (renderCom) => {
-  const buttonEl = document.querySelector(".add-form-button");
-  const name = document.getElementById("name");
-  const text = document.getElementById("comment");
-
-  if (buttonEl && name && text) {
-    buttonEl.addEventListener("click", () => {
-      if (name.value === "" || text.value === "") {
-        document.getElementById("name").placeholder =
-          "Это обязательное поле!!!";
-        document.getElementById("comment").placeholder =
-          "Это обязательное поле!!!";
-        return;
-      }
-
-      const newComment = {
-        name: sanitize(name.value),
-        author: { name: "Глеб Фокин" },
-        date: new Date(),
-        text: sanitize(text.value),
-        likes: 0,
-        isLiked: false,
-      };
-
-      buttonEl.disabled = true;
-      buttonEl.textContent = "Комментарий отправляется...";
-
-      fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments", {
-        method: "POST",
-        body: JSON.stringify(newComment),
-      })
-        .then((response) => {
-          if (response.status === 500) {
-            throw new Error("Ошибка сервера");
-          }
-
-          if (response.status === 400) {
-            throw new Error("Неверный запрос");
-          }
-
-          if (response.status === 201) {
-            return response.json();
-          }
-        })
-        .catch((error) => {
-          if (error.message === "Failed to fetch") {
-            alert("Проверьте подключение к сети");
-          }
-
-          if (error.message === "Неверный запрос") {
-            alert("Имя и текст комментария должны быть не короче 3-х символов");
-          }
-
-          if (error.message === "Ошибка сервера") {
-            alert("Ошибка сервера");
-          }
-          buttonEl.disabled = false;
-          buttonEl.textContent = "Написать";
-        })
-        .then((response) => {
-          return fetch(
-            "https://wedev-api.sky.pro/api/v1/danil-bersenev/comments"
-          );
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
-            .then((response) => response.json())
-            .then((commentsData) => {
-              if (Array.isArray(commentsData.comments)) {
-                buttonEl.disabled = false;
-                buttonEl.textContent = "Написать";
-
-                updateCom(commentsData.comments);
-                renderCom();
-              }
-            });
-        });
-
-      name.value = "";
-      text.value = "";
-    });
-  }
-};
+fetchCom().then(data => {
+  updateCom(data)
+  renderCom()
+});
 
 addCommentListener(renderCom);
+
+

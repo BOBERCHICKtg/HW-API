@@ -1,16 +1,15 @@
-import { comment } from "./comments.js";
+import { comments } from "./comments.js";
 import { likeListeners, replyListeners } from "./listeners.js";
 
 export const renderCom = () => {
   const list = document.querySelector(".comments");
 
-  if (Array.isArray(comment)) {
-    list.innerHTML = comment
-      .map((comment, index) => {
-        return `
+  list.innerHTML = comments
+    .map((comment, index) => {
+      return `
      <li id="commentBox" data-index="${index}" class="comment">
          <div class="comment-header">
-             <div>${comment.author.name}</div>
+             <div>${comment.name}</div>
              <div>${new Date(comment.date).toLocaleDateString()}</div>
          </div>
          <div class="comment-body">
@@ -22,23 +21,15 @@ export const renderCom = () => {
              <div class="likes">
                  <span class="likes-counter">${comment.likes}</span>
                  <button data-index='${index}' class="like-button ${
-          comment.isLiked ? "-active-like" : ""
-        }"></button>
+        comment.isLiked ? "-active-like" : ""
+      }"></button>
              </div>
          </div>
      </li>
      `;
-      })
-      .join("");
+    })
+    .join("");
 
-    // Проверяем, что функции существуют перед вызовом
-    if (likeListeners) {
-      likeListeners(renderCom);
-    }
-    if (replyListeners) {
-      replyListeners();
-    }
-  } else {
-    console.error("Комментарии не определены или не являются массивом");
-  }
+  likeListeners(renderCom);
+  replyListeners();
 };
