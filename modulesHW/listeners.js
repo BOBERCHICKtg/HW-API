@@ -11,7 +11,7 @@ export const likeListeners = (renderCom) => {
       event.stopPropagation();
       const index = likeBtn.dataset.index;
 
-      const currentComment = comment[index];
+      const currentComment = comments[index];
 
       currentComment.likes = currentComment.isLiked
         ? currentComment.likes - 1
