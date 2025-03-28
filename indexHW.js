@@ -1,15 +1,20 @@
 import { fetchCom } from "./modulesHW/api.js";
 import { updateCom } from "./modulesHW/comments.js";
-import { addCommentListener } from "./modulesHW/listeners.js";
 import { renderCom } from "./modulesHW/renderCom.js";
 
-document.querySelector(".comments").innerHTML = "Загружаю комментарий...";
+/* document.querySelector(".comments").innerHTML = ""; */
 
-fetchCom().then(data => {
-  updateCom(data)
-  renderCom()
-});
+export const fetchAndRenderCom = (isFirstLoading) => {
+  if (isFirstLoading) {
+    document.querySelector(
+      ".container"
+    ).innerHTML = `<p>Загружаю комментарий...</p>`;
+  }
 
-addCommentListener(renderCom);
+  fetchCom().then((data) => {
+    updateCom(data);
+    renderCom();
+  });
+};
 
-
+fetchAndRenderCom(true);

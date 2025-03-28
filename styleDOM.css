@@ -133,3 +133,8 @@ body {
 .add-form-button:hover {
     opacity: 0.9;
 }
+
+.link-login {
+    text-decoration: underline;
+    cursor: pointer;
+}
