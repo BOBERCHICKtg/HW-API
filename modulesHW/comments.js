@@ -1,7 +1,5 @@
-export let comment = [
+export let comments = [];
 
-];
-
-export const updateCom = (comments) => {
-  comment = comments;
+export const updateCom = (newComments) => {
+  comments = newComments;
 };

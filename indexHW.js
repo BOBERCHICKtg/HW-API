@@ -1,14 +1,18 @@
+import { fetchCom } from "./modulesHW/api.js";
 import { updateCom } from "./modulesHW/comments.js";
-import { addCommentListener } from "./modulesHW/listeners.js";
 import { renderCom } from "./modulesHW/renderCom.js";
 
-addCommentListener(renderCom);
+export const fetchAndRenderCom = (isFirstLoading) => {
+  if (isFirstLoading) {
+    document.querySelector(
+      ".container"
+    ).innerHTML = `<p>Загружаю комментарий...</p>`;
+  }
 
-fetch("https://wedev-api.sky.pro/api/v1/danil-bersenev/comments")
-  .then((response) => {
-    return response.json();
-  })
-  .then((data) => {
-    updateCom(data.comments);
+  fetchCom().then((data) => {
+    updateCom(data);
     renderCom();
   });
+};
+
+fetchAndRenderCom(true);
